@@ -18,11 +18,10 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), MainInterface {
     override fun mainInterface(size: Int) {
-        actionMode = startActionMode(ActionModeCallback())
+        if (actionMode == null) actionMode = startActionMode(ActionModeCallback())
         if (size > 0) actionMode?.setTitle("$size")
         else actionMode?.finish()
     }
-
 
     var actionMode: ActionMode? = null
     var myAdapter: MyAdapter? = null
@@ -72,8 +71,8 @@ class MainActivity : AppCompatActivity(), MainInterface {
 
         override fun onDestroyActionMode(mode: ActionMode?) {
             Log.d(TAG, "onDestroyActionMode Called")
-//            myAdapter?.selectedIds?.clear()
-//            myAdapter?.notifyDataSetChanged()
+            myAdapter?.selectedIds?.clear()
+            myAdapter?.notifyDataSetChanged()
             actionMode = null
         }
     }
