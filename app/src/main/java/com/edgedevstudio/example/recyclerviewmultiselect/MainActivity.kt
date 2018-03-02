@@ -13,22 +13,22 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import java.util.*
-import kotlin.collections.ArrayList
-
 
 class MainActivity : AppCompatActivity(), MainInterface {
-    override fun mainInterface(size: Int) {
-        if (actionMode == null) actionMode = startActionMode(ActionModeCallback())
-        if (size > 0) actionMode?.setTitle("$size")
-        else actionMode?.finish()
-    }
 
     var actionMode: ActionMode? = null
     var myAdapter: MyAdapter? = null
 
+
     companion object {
         var isMultiSelectOn = false
         val TAG = "MainActivity"
+    }
+
+    override fun mainInterface(size: Int) {
+        if (actionMode == null) actionMode = startActionMode(ActionModeCallback())
+        if (size > 0) actionMode?.setTitle("$size")
+        else actionMode?.finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,18 +37,20 @@ class MainActivity : AppCompatActivity(), MainInterface {
 
         isMultiSelectOn = false
 
-        val r_view = findViewById<RecyclerView>(R.id.r_view)
-        r_view.layoutManager = LinearLayoutManager(this)
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
         myAdapter = MyAdapter(this, this)
-        r_view.adapter = myAdapter
+        recyclerView.adapter = myAdapter
         myAdapter?.modelList = getDummyData()
         myAdapter?.notifyDataSetChanged()
     }
 
     inner class ActionModeCallback : ActionMode.Callback {
+        var shouldResetRecyclerView = true
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when (item?.getItemId()) {
                 R.id.action_delete -> {
+                    shouldResetRecyclerView = false
                     myAdapter?.deleteSelectedIds()
                     actionMode?.setTitle("") //remove item count from action mode.
                     actionMode?.finish()
@@ -70,14 +72,18 @@ class MainActivity : AppCompatActivity(), MainInterface {
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
-            Log.d(TAG, "onDestroyActionMode Called")
-            myAdapter?.selectedIds?.clear()
-            myAdapter?.notifyDataSetChanged()
+            if (shouldResetRecyclerView) {
+                myAdapter?.selectedIds?.clear()
+                myAdapter?.notifyDataSetChanged()
+            }
+            isMultiSelectOn = false
             actionMode = null
+            shouldResetRecyclerView = true
         }
     }
 
     private fun getDummyData(): MutableList<MyModel> {
+        Log.d(TAG, "inside getDummyData")
         val list = ArrayList<MyModel>()
         list.add(MyModel(getRandomID(), "1. GridView"))
         list.add(MyModel(getRandomID(), "2. Switch"))
@@ -94,7 +100,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         list.add(MyModel(getRandomID(), "13. Spinner"))
         list.add(MyModel(getRandomID(), "14. CheckBox"))
         list.add(MyModel(getRandomID(), "15. RadioButton"))
-        Log.d(TAG, "Size of Dummy Data is  ${list.size}")
+        Log.d(TAG, "The size is ${list.size}")
         return list
     }
 
@@ -126,7 +132,6 @@ class MainActivity : AppCompatActivity(), MainInterface {
             notifyItemChanged(index)
             if (selectedIds.size < 1) isMultiSelectOn = false
             mainInterface.mainInterface(selectedIds.size)
-
         }
 
         var modelList: MutableList<MyModel> = ArrayList<MyModel>()
@@ -152,7 +157,6 @@ class MainActivity : AppCompatActivity(), MainInterface {
             if (selectedIds.size < 1) return
             val selectedIdIteration: MutableListIterator<String> = selectedIds.listIterator();
 
-
             while (selectedIdIteration.hasNext()) {
                 val selectedItemID = selectedIdIteration.next()
                 Log.d(TAG, "The ID is $selectedItemID")
@@ -169,7 +173,6 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 }
 
                 isMultiSelectOn = false
-
             }
         }
 
