@@ -11,60 +11,48 @@ import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import java.util.*
+import kotlin.collections.ArrayList
 
-class MainActivity : AppCompatActivity() {
-    var recyclerViewAdapter: RecyclerViewAdapter? = null
-    var isMultiSelect = false
+
+class MainActivity : AppCompatActivity(), MainInterface {
+    override fun mainInterface(size: Int) {
+        actionMode = startActionMode(ActionModeCallback())
+        if (size > 0) actionMode?.setTitle("$size")
+        else actionMode?.finish()
+    }
+
+
     var actionMode: ActionMode? = null
-    var selectedIds: MutableList<String> = ArrayList()
+    var myAdapter: MyAdapter? = null
 
-    val TAG = "MainActivity"
+    companion object {
+        var isMultiSelectOn = false
+        val TAG = "MainActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d(TAG, "inside onCreate")
 
-        val recyclerView = findViewById<RecyclerView>(R.id.r_view)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        val dummyData = getDummyData()
-        recyclerViewAdapter = RecyclerViewAdapter(this, dummyData)
-        recyclerView.adapter = recyclerViewAdapter
-        recyclerView.addOnItemTouchListener(RecyclerViewItemClickListener(this,
-                recyclerView, object : OnItemClickListener {
-            override fun onItemLongClick(view: View?, position: Int) {
-                if (!isMultiSelect) {
-                    selectedIds = ArrayList<String>()
-                    isMultiSelect = true
-                    if (actionMode == null) {
-                        actionMode = startActionMode(StartActionModeCallback()) //show ActionMode.
-                    }
-                }
-                multiSelect(position)
-            }
+        isMultiSelectOn = false
 
-            override fun onItemClick(view: View, position: Int) {
-                if (isMultiSelect) {
-                    multiSelect(position)
-                }
-            }
-        }))
+        val r_view = findViewById<RecyclerView>(R.id.r_view)
+        r_view.layoutManager = LinearLayoutManager(this)
+        myAdapter = MyAdapter(this, this)
+        r_view.adapter = myAdapter
+        myAdapter?.modelList = getDummyData()
+        myAdapter?.notifyDataSetChanged()
     }
 
-    inner class StartActionModeCallback : ActionMode.Callback {
+    inner class ActionModeCallback : ActionMode.Callback {
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when (item?.getItemId()) {
                 R.id.action_delete -> {
-                    recyclerViewAdapter?.deleteSelecteIds()
+                    myAdapter?.deleteSelectedIds()
                     actionMode?.setTitle("") //remove item count from action mode.
                     actionMode?.finish()
-//                    val stringBuilder = StringBuilder()
-//                    for (data in getDummyData()) {
-//                        if (selectedIds.contains(data.id))
-//                            stringBuilder.append("\n").append(data.title)
-//                    }
-//                    Toast.makeText(this@MainActivity, "Removed items are :" + stringBuilder.toString(), Toast.LENGTH_SHORT).show()
                     return true
                 }
             }
@@ -78,121 +66,142 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-            return false
+            menu?.findItem(R.id.action_delete)?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            return true
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
+            Log.d(TAG, "onDestroyActionMode Called")
+//            myAdapter?.selectedIds?.clear()
+//            myAdapter?.notifyDataSetChanged()
             actionMode = null
-            isMultiSelect = false
-            selectedIds = ArrayList()
-            recyclerViewAdapter?.setSelectedIds(ArrayList<String>())
-        }
-    }
-
-    private fun multiSelect(position: Int) {
-        val model = recyclerViewAdapter?.getItem(position)
-        if (model != null) {
-            if (actionMode != null)  {
-                if (selectedIds.contains(model.id))
-                    selectedIds.remove(model.id)
-                else
-                    selectedIds.add(model.id)
-
-                if (selectedIds.size > 0)
-                    actionMode?.setTitle(selectedIds.size.toString()) //show selected item count on action mode.
-                else {
-                    actionMode?.setTitle("") //remove item count from action mode.
-                    actionMode?.finish() //hide action mode.
-                }
-                recyclerViewAdapter?.setSelectedIds(selectedIds)
-            }
         }
     }
 
     private fun getDummyData(): MutableList<MyModel> {
-        Log.d(TAG, "inside getDummyData")
         val list = ArrayList<MyModel>()
-        list.add(MyModel(getRandomID(), "GridView"))
-        list.add(MyModel(getRandomID(), "Switch"))
-        list.add(MyModel(getRandomID(), "SeekBar"))
-        list.add(MyModel(getRandomID(), "EditText"))
-        list.add(MyModel(getRandomID(), "ToggleButton"))
-        list.add(MyModel(getRandomID(), "ProgressBar"))
-        list.add(MyModel(getRandomID(), "ListView"))
-        list.add(MyModel(getRandomID(), "RecyclerView"))
-        list.add(MyModel(getRandomID(), "ImageView"))
-        list.add(MyModel(getRandomID(), "TextView"))
-        list.add(MyModel(getRandomID(), "Button"))
-        list.add(MyModel(getRandomID(), "ImageButton"))
-        list.add(MyModel(getRandomID(), "Spinner"))
-        list.add(MyModel(getRandomID(), "CheckBox"))
-        list.add(MyModel(getRandomID(), "RadioButton"))
-        Log.d(TAG, "The size is ${list.size}")
+        list.add(MyModel(getRandomID(), "1. GridView"))
+        list.add(MyModel(getRandomID(), "2. Switch"))
+        list.add(MyModel(getRandomID(), "3. SeekBar"))
+        list.add(MyModel(getRandomID(), "4. EditText"))
+        list.add(MyModel(getRandomID(), "5. ToggleButton"))
+        list.add(MyModel(getRandomID(), "6. ProgressBar"))
+        list.add(MyModel(getRandomID(), "7. ListView"))
+        list.add(MyModel(getRandomID(), "8. RecyclerView"))
+        list.add(MyModel(getRandomID(), "9. ImageView"))
+        list.add(MyModel(getRandomID(), "10. TextView"))
+        list.add(MyModel(getRandomID(), "11. Button"))
+        list.add(MyModel(getRandomID(), "12. ImageButton"))
+        list.add(MyModel(getRandomID(), "13. Spinner"))
+        list.add(MyModel(getRandomID(), "14. CheckBox"))
+        list.add(MyModel(getRandomID(), "15. RadioButton"))
+        Log.d(TAG, "Size of Dummy Data is  ${list.size}")
         return list
     }
 
     fun getRandomID() = UUID.randomUUID().toString()
 
-
-    class RecyclerViewAdapter(val context: Context, val modelList: MutableList<MyModel>) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
-        var selectedIDs: MutableList<String> = ArrayList<String>()
-        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyViewHolder {
-            val inflater = LayoutInflater.from(parent?.context)
-            val view = inflater.inflate(R.layout.adapter_item_layout, parent, false)
-            return MyViewHolder(view)
+    class MyAdapter(val context: Context, val mainInterface: MainInterface) : RecyclerView.Adapter<MyViewHolder>(), RecyclerViewClick {
+        override fun onLongTap(index: Int) {
+            if (!isMultiSelectOn) {
+                isMultiSelectOn = true
+            }
+            addIDIntoSelectedIds(index)
         }
 
-        override fun getItemCount(): Int {
-            return modelList.size
+        override fun onTap(index: Int) {
+            if (isMultiSelectOn) {
+                addIDIntoSelectedIds(index)
+            } else {
+                Toast.makeText(context, "Clicked Item @ Position ${index + 1}", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        override fun onBindViewHolder(holder: MyViewHolder?, position: Int) {
-            holder?.title?.setText(modelList[position].title)
-            val id = modelList[position].id
+        fun addIDIntoSelectedIds(index: Int) {
+            val id = modelList[index].id
+            if (selectedIds.contains(id))
+                selectedIds.remove(id)
+            else
+                selectedIds.add(id)
 
-            if (selectedIDs.contains(id)) {
+            notifyItemChanged(index)
+            if (selectedIds.size < 1) isMultiSelectOn = false
+            mainInterface.mainInterface(selectedIds.size)
+
+        }
+
+        var modelList: MutableList<MyModel> = ArrayList<MyModel>()
+        val selectedIds: MutableList<String> = ArrayList<String>()
+
+        override fun getItemCount() = modelList.size
+
+        override fun onBindViewHolder(holder: MyViewHolder?, index: Int) {
+            holder?.textView?.setText(modelList[index].title)
+
+            val id = modelList[index].id
+
+            if (selectedIds.contains(id)) {
                 //if item is selected then,set foreground color of FrameLayout.
-                holder?.rootView?.foreground = ColorDrawable(ContextCompat.getColor(context, R.color.colorControlActivated))
+                holder?.frameLayout?.foreground = ColorDrawable(ContextCompat.getColor(context, R.color.colorControlActivated))
             } else {
                 //else remove selected item color.
-                holder?.rootView?.foreground = ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent))
+                holder?.frameLayout?.foreground = ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent))
             }
         }
 
-        fun getItem(position: Int): MyModel {
-            return modelList[position]
-        }
+        fun deleteSelectedIds() {
+            if (selectedIds.size < 1) return
+            val selectedIdIteration: MutableListIterator<String> = selectedIds.listIterator();
 
-        fun setSelectedIds(selectedIds: MutableList<String>) {
-            this.selectedIDs = selectedIds
-            notifyDataSetChanged()
-        }
 
-        fun deleteSelecteIds() {
-            if (selectedIDs.size < 1) return
-            val m : MutableList<MyModel>  = ArrayList()
-            for (id in selectedIDs) {
-                for (model in modelList) {
-                    if (model.id == id) {
-                        m.add(model)
+            while (selectedIdIteration.hasNext()) {
+                val selectedItemID = selectedIdIteration.next()
+                Log.d(TAG, "The ID is $selectedItemID")
+                var indexOfModelList = 0
+                val modelListIteration: MutableListIterator<MyModel> = modelList.listIterator();
+                while (modelListIteration.hasNext()) {
+                    val model = modelListIteration.next()
+                    if (selectedItemID.equals(model.id)) {
+                        modelListIteration.remove()
+                        selectedIdIteration.remove()
+                        notifyItemRemoved(indexOfModelList)
                     }
+                    indexOfModelList++
                 }
-            }
-            modelList.removeAll(m)
-            notifyDataSetChanged()
-        }
 
-        class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            var title: TextView
-            var rootView: FrameLayout
+                isMultiSelectOn = false
 
-            init {
-                title = itemView.findViewById(R.id.title)
-                rootView = itemView.findViewById(R.id.root_view)
             }
         }
 
 
+        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyViewHolder {
+            val inflater = LayoutInflater.from(parent?.context)
+            val itemView = inflater.inflate(R.layout.view_holder_layout, parent, false)
+            return MyViewHolder(itemView, this)
+        }
+    }
+
+    class MyViewHolder(itemView: View, val r_tap: RecyclerViewClick) : RecyclerView.ViewHolder(itemView),
+            View.OnLongClickListener, View.OnClickListener {
+
+        val textView: TextView
+        val frameLayout: FrameLayout
+
+        init {
+            textView = itemView.findViewById(R.id.myTextView)
+            frameLayout = itemView.findViewById(R.id.root_layout)
+            frameLayout.setOnClickListener(this)
+            frameLayout.setOnLongClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            r_tap.onTap(adapterPosition)
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            r_tap.onLongTap(adapterPosition)
+            return true
+        }
     }
 }
-
