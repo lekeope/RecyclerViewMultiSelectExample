@@ -3,6 +3,5 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorActionMode">#009362</color>
     <color name="colorControlActivated">#50FF4081</color>
 </resources>
