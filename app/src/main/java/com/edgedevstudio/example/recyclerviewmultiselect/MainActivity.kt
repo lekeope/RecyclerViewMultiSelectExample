@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
 
 
 
-    class MyViewHolder(itemView: View, val r_tap: RecyclerViewClick) : RecyclerView.ViewHolder(itemView),
+    class MyViewHolder(itemView: View, val r_tap: RecyclerViewClickListener) : RecyclerView.ViewHolder(itemView),
             View.OnLongClickListener, View.OnClickListener {
 
         val textView: TextView
