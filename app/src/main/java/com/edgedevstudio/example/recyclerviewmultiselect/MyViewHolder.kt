@@ -8,7 +8,7 @@ import android.widget.TextView
 /**
  * Created by OPEYEMI OLORUNLEKE on 3/4/2018.
  */
-class MyViewHolder(itemView: View, val r_tap: RecyclerViewClickListener) : RecyclerView.ViewHolder(itemView),
+class MyViewHolder(itemView: View, val r_tap: ViewHolderClickListener) : RecyclerView.ViewHolder(itemView),
         View.OnLongClickListener, View.OnClickListener {
 
     val textView: TextView

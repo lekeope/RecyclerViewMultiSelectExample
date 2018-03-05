@@ -13,7 +13,7 @@ import java.util.*
 /**
  * Created by OPEYEMI OLORUNLEKE on 3/4/2018.
  */
-class MyAdapter(val context: Context, val mainInterface: MainInterface) : RecyclerView.Adapter<MyViewHolder>(), RecyclerViewClickListener {
+class MyAdapter(val context: Context, val mainInterface: MainInterface) : RecyclerView.Adapter<MyViewHolder>(), ViewHolderClickListener {
     override fun onLongTap(index: Int) {
         if (!MainActivity.isMultiSelectOn) {
             MainActivity.isMultiSelectOn = true
