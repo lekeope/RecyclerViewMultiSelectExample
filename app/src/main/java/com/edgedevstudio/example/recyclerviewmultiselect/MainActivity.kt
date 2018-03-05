@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity(), MainInterface {
     var actionMode: ActionMode? = null
     var myAdapter: MyAdapter? = null
 
-
     companion object {
         var isMultiSelectOn = false
         val TAG = "MainActivity"

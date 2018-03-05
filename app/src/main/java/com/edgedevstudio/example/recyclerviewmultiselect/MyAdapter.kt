@@ -62,7 +62,7 @@ class MyAdapter(val context: Context, val mainInterface: MainInterface) : Recycl
 
     fun deleteSelectedIds() {
         if (selectedIds.size < 1) return
-        val selectedIdIteration: MutableListIterator<String> = selectedIds.listIterator();
+        val selectedIdIteration = selectedIds.listIterator();
 
         while (selectedIdIteration.hasNext()) {
             val selectedItemID = selectedIdIteration.next()
