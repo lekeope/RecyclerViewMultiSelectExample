@@ -13,7 +13,7 @@ import java.util.*
 /**
  * Created by OPEYEMI OLORUNLEKE on 3/4/2018.
  */
-class MyAdapter(val context: Context, val mainInterface: MainInterface) : RecyclerView.Adapter<MainActivity.MyViewHolder>(), RecyclerViewClickListener {
+class MyAdapter(val context: Context, val mainInterface: MainInterface) : RecyclerView.Adapter<MyViewHolder>(), RecyclerViewClickListener {
     override fun onLongTap(index: Int) {
         if (!MainActivity.isMultiSelectOn) {
             MainActivity.isMultiSelectOn = true
@@ -46,7 +46,7 @@ class MyAdapter(val context: Context, val mainInterface: MainInterface) : Recycl
 
     override fun getItemCount() = modelList.size
 
-    override fun onBindViewHolder(holder: MainActivity.MyViewHolder?, index: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder?, index: Int) {
         holder?.textView?.setText(modelList[index].title)
 
         val id = modelList[index].id
@@ -82,11 +82,9 @@ class MyAdapter(val context: Context, val mainInterface: MainInterface) : Recycl
             MainActivity.isMultiSelectOn = false
         }
     }
-
-
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MainActivity.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyViewHolder {
         val inflater = LayoutInflater.from(parent?.context)
         val itemView = inflater.inflate(R.layout.view_holder_layout, parent, false)
-        return MainActivity.MyViewHolder(itemView, this)
+        return MyViewHolder(itemView, this)
     }
 }

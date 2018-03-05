@@ -8,9 +8,6 @@ import android.util.Log
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.FrameLayout
-import android.widget.TextView
 import java.util.*
 
 class MainActivity : AppCompatActivity(), MainInterface {
@@ -104,29 +101,4 @@ class MainActivity : AppCompatActivity(), MainInterface {
     }
 
     fun getRandomID() = UUID.randomUUID().toString()
-
-
-
-    class MyViewHolder(itemView: View, val r_tap: RecyclerViewClickListener) : RecyclerView.ViewHolder(itemView),
-            View.OnLongClickListener, View.OnClickListener {
-
-        val textView: TextView
-        val frameLayout: FrameLayout
-
-        init {
-            textView = itemView.findViewById(R.id.myTextView)
-            frameLayout = itemView.findViewById(R.id.root_layout)
-            frameLayout.setOnClickListener(this)
-            frameLayout.setOnLongClickListener(this)
-        }
-
-        override fun onClick(v: View?) {
-            r_tap.onTap(adapterPosition)
-        }
-
-        override fun onLongClick(v: View?): Boolean {
-            r_tap.onLongTap(adapterPosition)
-            return true
-        }
-    }
 }
